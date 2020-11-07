@@ -275,20 +275,30 @@ document.addEventListener('DOMContentLoaded', () => {
     return await res.json();
   };
 
-  getResource('http://localhost:3000/menu')
-    // Мое решение
-    .then(data => {
-      data.forEach(obj => {
+  // getResource('http://localhost:3000/menu')
+  //   // Мое решение
+  //   .then(data => {
+  //     data.forEach(obj => {
+  //       new MenuCard(...Object.values(obj), '.menu .container').render();
+  //     });
+  //   })
+  //   .catch(err => console.log(err));
+  //   // С урока
+  //   // .then(data => {
+  //   //   data.forEach(({img, altimg, title, descr, price}) => {
+  //   //     new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
+  //   //   });
+  //   // });
+
+  // Библиотека axios
+  axios.get('http://localhost:3000/menu')
+    .then(cards => {
+      cards.data.forEach(obj => {
         new MenuCard(...Object.values(obj), '.menu .container').render();
       });
-    })
-    .catch(err => console.log(err));
-    // С урока
-    // .then(data => {
-    //   data.forEach(({img, altimg, title, descr, price}) => {
-    //     new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
-    //   });
-    // });
+    });
+    // Объект {data: [{}, {}, {}], status: 200, ...}
+    // .then(data => console.log(data));
 
   // Еще один вариант (вместо класса)
   // function createCard(data) {
