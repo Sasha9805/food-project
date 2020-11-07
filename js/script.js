@@ -262,37 +262,90 @@ document.addEventListener('DOMContentLoaded', () => {
       this.parent.append(element);
     }
   }
+
+  // Воспользуемся данными из db.json
+  const getResource = async url => {
+    const res = await fetch(url);
+
+    // Ошибки HTTP не переведут сост. промиса в reject
+    if (!res.ok) {
+      throw new Error(`Could not fetch ${url}, status: ${res.status}`);
+    }
+
+    return await res.json();
+  };
+
+  getResource('http://localhost:3000/menu')
+    // Мое решение
+    .then(data => {
+      data.forEach(obj => {
+        new MenuCard(...Object.values(obj), '.menu .container').render();
+      });
+    })
+    .catch(err => console.log(err));
+    // С урока
+    // .then(data => {
+    //   data.forEach(({img, altimg, title, descr, price}) => {
+    //     new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
+    //   });
+    // });
+
+  // Еще один вариант (вместо класса)
+  // function createCard(data) {
+  //   data.forEach(({img, altimg, title, descr, price}) => {
+  //     const elem = document.createElement('div');
+  //     elem.classList.add('menu__item');
+
+  //     elem.innerHTML = `
+  //       <img src=${img} alt=${altimg}>
+  //       <h3 class="menu__item-subtitle">${title}</h3>
+  //       <div class="menu__item-descr">${descr}</div>
+  //       <div class="menu__item-divider"></div>
+  //       <div class="menu__item-price">
+  //           <div class="menu__item-cost">Цена:</div>
+  //           <div class="menu__item-total"><span>${price}</span> грн/день</div>
+  //       </div>
+  //     `;
+
+  //     document.querySelector('.menu .container').append(elem);
+  //   });
+  // }
+
+  // getResource('http://localhost:3000/menu')
+  //   .then(data => createCard(data))
+  //   .catch(err => console.log(err));
+
   // Вызываем
-  new MenuCard(
-    "img/tabs/vegy.jpg",
-    "vegy",
-    'Меню "Фитнес"',
-    'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-    9,
-    '.menu .container',
-    // 'menu__item'
-  ).render();
+  // new MenuCard(
+  //   "img/tabs/vegy.jpg",
+  //   "vegy",
+  //   'Меню "Фитнес"',
+  //   'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+  //   9,
+  //   '.menu .container',
+  //   // 'menu__item'
+  // ).render();
 
-  new MenuCard(
-    "img/tabs/elite.jpg",
-    "elite",
-    'Меню “Премиум”',
-    'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-    21,
-    '.menu .container',
-    'menu__item',
-    'big'
-  ).render();
+  // new MenuCard(
+  //   "img/tabs/elite.jpg",
+  //   "elite",
+  //   'Меню “Премиум”',
+  //   'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
+  //   21,
+  //   '.menu .container',
+  //   'menu__item',
+  //   'big'
+  // ).render();
 
-  new MenuCard(
-    "img/tabs/post.jpg",
-    "post",
-    'Меню "Постное"',
-    'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
-    14,
-    '.menu .container',
-    'menu__item'
-  ).render();
+  // new MenuCard(
+  //   "img/tabs/post.jpg",
+  //   "post",
+  //   'Меню "Постное"',
+  //   'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
+  //   14,
+  //   '.menu .container',
+  //   'menu__item'
+  // ).render();
   
   // Forms
 
@@ -306,10 +359,22 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   
   for (let form of forms) {
-    postData(form);
+    bindPostData(form);
   }
 
-  function postData(form) {
+  const postData = async (url, data) => {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: data
+    });
+
+    return await res.json();
+  };
+
+  function bindPostData(form) {
     form.addEventListener('submit', event => {
       event.preventDefault();
 
@@ -339,12 +404,15 @@ document.addEventListener('DOMContentLoaded', () => {
       // Но, напр., нам нужно передать в формате JSON
       // request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
       // Нужно преобр. FormData в JSON
-      const obj = {};
-      formData.forEach((value, key) => {
-        obj[key] = value;
-      });
-      // Конвертируем в JSON
-      const json = JSON.stringify(obj);
+      // const obj = {};
+      // formData.forEach((value, key) => {
+      //   obj[key] = value;
+      // });
+      // // Конвертируем в JSON
+      // const json = JSON.stringify(obj);
+
+      // Преобразуем по-другому
+      const json = JSON.stringify(Object.fromEntries(formData.entries()));
 
       // Отправим
       // request.send(formData);
@@ -357,17 +425,18 @@ document.addEventListener('DOMContentLoaded', () => {
       // А если это ошибка HTTP, то промис не перейдет в состояние reject
       // При server1 - 404 (запрашиваемый ресурс не найден)
       // Если в Network поставить offline, то catch сработает
-      fetch('/server.php', {
-        method: 'POST',
-        headers: {
-          'Content-type': 'application/json'
-        },
-        // Для FormData заголовки не нужны!
-        // body: formData
-        body: json
-      })
-      // response.json() - сработает catch, а от сервера получим NULL
-      .then(response => response.text())
+      // fetch('/server.php', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-type': 'application/json'
+      //   },
+      //   // Для FormData заголовки не нужны!
+      //   // body: formData
+      //   body: json
+      // })
+      // // response.json() - сработает catch, а от сервера получим NULL
+      // .then(response => response.text())
+      postData('http://localhost:3000/requests', json)
       .then(data => {
         console.log(data);
         showThanksModal(message.success);
@@ -451,8 +520,8 @@ document.addEventListener('DOMContentLoaded', () => {
   //   .then(json => console.log(json));
 
   // Попробуем получить доступ к db.json
-  fetch('db.json')
-  // fetch('http://localhost:3000/menu')
-    .then(response => response.json())
-    .then(data => console.log(data));
+  // fetch('db.json')
+  // // fetch('http://localhost:3000/menu')
+  //   .then(response => response.json())
+  //   .then(data => console.log(data));
 });
