@@ -534,4 +534,64 @@ document.addEventListener('DOMContentLoaded', () => {
   // // fetch('http://localhost:3000/menu')
   //   .then(response => response.json())
   //   .then(data => console.log(data));
+
+  // Slider
+
+  const slides = document.querySelectorAll('.offer__slide'),
+        prev = document.querySelector('.offer__slider-prev'),
+        next = document.querySelector('.offer__slider-next'),
+        total = document.getElementById('total'),
+        current = document.getElementById('current');
+
+  let slideIndex = 1;
+
+  // Инициализация при запуске
+  showSlides(slideIndex);
+
+  if (slides.length < 10) {
+    total.textContent = `0${slides.length}`;
+  } else {
+    total.textContent = slides.length;
+  }
+
+  function showSlides(ind) {
+    if (ind > slides.length) {
+      slideIndex = 1;
+    }
+
+    if (ind < 1) {
+      slideIndex = slides.length;
+    }
+
+    slides.forEach(slide => slide.style.display = 'none');
+    slides[slideIndex - 1].style.display = 'block';
+
+    // if (slides.length < 10) {
+    if (slideIndex < 10) {
+      current.textContent = `0${slideIndex}`;
+    } else {
+      current.textContent = slideIndex;
+    }
+  }
+
+  function plusSlides(ind) {
+    showSlides(slideIndex += ind);
+  }
+
+  prev.addEventListener('click', () => {
+    plusSlides(-1);
+  });
+
+  next.addEventListener('click', () => {
+    plusSlides(1);
+  });
+
+  // Чтоб не выделялось при нажатии
+  // prev.addEventListener('mousedown', event => {
+  //   event.preventDefault();
+  // });
+
+  // next.addEventListener('mousedown', event => {
+  //   event.preventDefault();
+  // });
 });
