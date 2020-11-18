@@ -538,6 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Slider
 
   const slides = document.querySelectorAll('.offer__slide'),
+        slider = document.querySelector('.offer__slider'),
         prev = document.querySelector('.offer__slider-prev'),
         next = document.querySelector('.offer__slider-next'),
         total = document.getElementById('total'),
@@ -553,6 +554,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Инициализация при запуске
   // showSlides(slideIndex);
 
+  // setTotalCount(slides, total);
   // if (slides.length < 10) {
   //   total.textContent = `0${slides.length}`;
   // } else {
@@ -571,6 +573,7 @@ document.addEventListener('DOMContentLoaded', () => {
   //   slides.forEach(slide => slide.style.display = 'none');
   //   slides[slideIndex - 1].style.display = 'block';
 
+  // setCurrentCount(slideIndex, current);
   //   // if (slides.length < 10) {
   //   if (slideIndex < 10) {
   //     current.textContent = `0${slideIndex}`;
@@ -601,17 +604,35 @@ document.addEventListener('DOMContentLoaded', () => {
   // });
 
   // Второй вариант слайдера - карусель (добавить стили в css)
-  if (slides.length < 10) {
-    total.textContent = `0${slides.length}`;
-  } else {
-    total.textContent = slides.length;
+  function setTotalCount(slides, total) {
+    if (slides.length < 10) {
+      total.textContent = `0${slides.length}`;
+    } else {
+      total.textContent = slides.length;
+    }
   }
 
-  if (slideIndex < 10) {
-    current.textContent = `0${slideIndex}`;
-  } else {
-    current.textContent = slideIndex;
+  function setCurrentCount(ind, current) {
+    if (ind < 10) {
+      current.textContent = `0${ind}`;
+    } else {
+      current.textContent = ind;
+    }
   }
+
+  setTotalCount(slides, total);
+  setCurrentCount(slideIndex, current);
+  // if (slides.length < 10) {
+  //   total.textContent = `0${slides.length}`;
+  // } else {
+  //   total.textContent = slides.length;
+  // }
+
+  // if (slideIndex < 10) {
+  //   current.textContent = `0${slideIndex}`;
+  // } else {
+  //   current.textContent = slideIndex;
+  // }
 
   slidesField.style.width = 100 * slides.length + '%';
   slides.forEach(slide => {
@@ -634,11 +655,17 @@ document.addEventListener('DOMContentLoaded', () => {
       slideIndex++;
     }
 
-    if (slideIndex < 10) {
-      current.textContent = `0${slideIndex}`;
-    } else {
-      current.textContent = slideIndex;
-    }
+    setCurrentCount(slideIndex, current);
+    // if (slideIndex < 10) {
+    //   current.textContent = `0${slideIndex}`;
+    // } else {
+    //   current.textContent = slideIndex;
+    // }
+
+    // Точки
+    setDotsOpacity(slideIndex, dots);
+    // dots.forEach(dot => dot.style.opacity = 0.5);
+    // dots[slideIndex - 1].style.opacity = 1;
   });
 
   prev.addEventListener('click', () => {
@@ -657,10 +684,66 @@ document.addEventListener('DOMContentLoaded', () => {
       slideIndex--;
     }
 
-    if (slideIndex < 10) {
-      current.textContent = `0${slideIndex}`;
-    } else {
-      current.textContent = slideIndex;
+    setCurrentCount(slideIndex, current);
+    // if (slideIndex < 10) {
+    //   current.textContent = `0${slideIndex}`;
+    // } else {
+    //   current.textContent = slideIndex;
+    // }
+
+    // Точки
+    setDotsOpacity(slideIndex, dots);
+    // dots.forEach(dot => dot.style.opacity = 0.5);
+    // dots[slideIndex - 1].style.opacity = 1;
+  });
+
+  // Сделаем навигацию (точки) для слайдера
+  // Для всего слайдера (offer__slider) нужно pos.: rel.
+  // Нужны стили css (файл styles.css из урока)
+  const indicators = document.createElement('ol'),
+        dots = [];
+  indicators.classList.add('carousel-indicators');
+  slider.append(indicators);
+
+  function setDotsOpacity(ind, dots) {
+    dots.forEach(dot => dot.style.opacity = 0.5);
+    dots[ind - 1].style.opacity = 1;
+  }
+
+  for (let i = 0; i < slides.length; i++) {
+    const dot = document.createElement('li');
+    dot.dataset.slideTo = i + 1;
+    dot.classList.add('dot');
+
+    if (i == 0) {
+      dot.style.opacity = 1;
     }
+
+    indicators.append(dot);
+
+    dots.push(dot);
+  }
+
+  // Клики на точки
+  dots.forEach(dot => {
+    dot.addEventListener('click', event => {
+      const slideTo = event.target.dataset.slideTo;
+
+      slideIndex = slideTo;
+
+      offset = width * (slideTo - 1);
+      slidesField.style.transform = `translate(-${offset}px)`;
+
+      setDotsOpacity(slideIndex, dots);
+      // dots.forEach(dot => dot.style.opacity = 0.5);
+      // dots[slideIndex - 1].style.opacity = 1;
+
+      setCurrentCount(slideIndex, current);
+      // if (slideIndex < 10) {
+      //   current.textContent = `0${slideIndex}`;
+      // } else {
+      //   current.textContent = slideIndex;
+      // }
+    });
   });
 });
