@@ -545,10 +545,16 @@ document.addEventListener('DOMContentLoaded', () => {
         current = document.getElementById('current'),
         slidesWrapper = document.querySelector('.offer__slider-wrapper'),
         slidesField = document.querySelector('.offer__slider-inner'),
-        width = parseInt(getComputedStyle(slidesWrapper).width);
+        // width = parseInt(getComputedStyle(slidesWrapper).width);
+        width = deleteNotDigits(getComputedStyle(slidesWrapper).width);
 
   let slideIndex = 1,
       offset = 0;
+
+  // Функция удаления не чисел с исп. регул. выр.
+  function deleteNotDigits(str) {
+    return +str.replace(/\D/g, '');
+  }
 
   // Первый вариант слайдера
   // Инициализация при запуске
