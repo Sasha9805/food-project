@@ -752,4 +752,102 @@ document.addEventListener('DOMContentLoaded', () => {
       // }
     });
   });
+
+  // Calculator
+
+  const result = document.querySelector('.calculating__result span');
+  let sex = 'female', height, weight, age, ratio = 1.375;
+
+  function calcTotal() {
+    if (!sex || !height || !weight || !age || !ratio) {
+      result.textContent = '____';
+      return;
+    }
+
+    if (sex == 'female') {
+      result.textContent = Math.round((447.6 + (9.2 * weight) + (3.1 * height) - (4.3 * age)) * ratio);
+    } else {
+      result.textContent = Math.round((88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * age)) * ratio);
+    }
+  }
+
+  calcTotal();
+
+  function getStaticInformation(parentSelector, activeClass) {
+    const elements = document.querySelectorAll(`${parentSelector} div`);
+
+    // document.querySelector(parentSelector).addEventListener('click', function(event) {
+    //   // Мое решение (не нужно исп. ф-ю-стрелку из-за this)
+    //   // console.log(this);
+    //   if (this == event.target) {
+    //     return;
+    //   }
+
+    //   if (event.target.dataset.ratio) {
+    //     ratio = +event.target.dataset.ratio;
+    //   } else {
+    //     sex = event.target.id;
+    //   }
+
+    //   console.log(sex);
+    //   console.log(ratio);
+
+    //   elements.forEach(item => {
+    //     item.classList.remove(activeClass);
+    //   });
+    //   event.target.classList.add(activeClass);
+
+    //   calcTotal();
+    // });
+
+    // С урока
+    elements.forEach(elem => {
+      elem.addEventListener('click', event => {
+        if (event.target.dataset.ratio) {
+          ratio = +event.target.dataset.ratio;
+        } else {
+          sex = event.target.id;
+        }
+
+        // console.log(sex);
+        // console.log(ratio);
+
+        elements.forEach(item => {
+          item.classList.remove(activeClass);
+        });
+        event.target.classList.add(activeClass);
+
+        calcTotal();
+      });
+    });
+  }
+
+  getStaticInformation('#gender', 'calculating__choose-item_active');
+  getStaticInformation('.calculating__choose_big', 'calculating__choose-item_active');
+
+  function getDynamicInformation(selector) {
+    const input = document.querySelector(selector);
+
+    input.addEventListener('input', () => {
+      switch (input.id) {
+        case 'height':
+          height = +input.value;
+          break;
+
+        case 'weight':
+          weight = +input.value;
+          break;
+
+        case 'age':
+          age = +input.value;
+          break;
+      }
+
+      calcTotal();
+    });
+  }
+
+  getDynamicInformation('#height');
+  getDynamicInformation('#weight');
+  getDynamicInformation('#age');
 });
