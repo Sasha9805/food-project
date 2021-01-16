@@ -1,12 +1,14 @@
-function tabs() {
+"use strict";
+
+function tabs(tabsSelector, tabsContentSelector, tabsParentSelector, activeClass) {
   // Tabs
 
   // Элементы меню (фитнес и т.д.)
-  const tabs = document.querySelectorAll('.tabheader__item'),
-    // Сами табы
-    tabsContent = document.querySelectorAll('.tabcontent'),
-    // Родитель эл-ов меню для делегирования
-    tabsParent = document.querySelector('.tabheader__items');
+  const tabs = document.querySelectorAll(tabsSelector),
+        // Сами табы
+        tabsContent = document.querySelectorAll(tabsContentSelector),
+        // Родитель эл-ов меню для делегирования
+        tabsParent = document.querySelector(tabsParentSelector);
   hideTabContent();
   // Можно без п-ов, будет отобр. первый элемент фитнес
   showTabContent();
@@ -22,7 +24,7 @@ function tabs() {
       item.classList.remove('show', 'fade');
     });
     // Убираем класс активности
-    tabs.forEach(item => item.classList.remove('tabheader__item_active'));
+    tabs.forEach(item => item.classList.remove(activeClass));
   }
 
   // Показ табов
@@ -32,14 +34,14 @@ function tabs() {
     // Классы
     tabsContent[number].classList.add('show', 'fade');
     tabsContent[number].classList.remove('hide');
-    tabs[number].classList.add('tabheader__item_active');
+    tabs[number].classList.add(activeClass);
   }
 
   // Делегирование
   tabsParent.addEventListener('click', e => {
     // Проще сначала получить
     const target = e.target;
-    if (target && target.classList.contains('tabheader__item')) {
+    if (target && target.classList.contains(tabsSelector.slice(1))) {
       tabs.forEach((item, i) => {
         // Если то, на что мы кликнули совпадает с элементом из псевдомассива, то вызываем ф-и
         if (item == target) {
@@ -51,4 +53,5 @@ function tabs() {
   });
 }
 
-module.exports = tabs;
+// module.exports = tabs;
+export default tabs;

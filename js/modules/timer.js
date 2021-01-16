@@ -1,7 +1,9 @@
-function timer() {
+"use strict";
+
+function timer(selector, deadline) {
   // Timer
 
-  const deadline = '2021-01-12 18:58:00';
+  // const deadline = '2021-01-12 18:58:00';
 
   // Расчет временных промежутков
   function getTimeRemaining(endtime) {
@@ -81,7 +83,8 @@ function timer() {
     }
   }
 
-  setTimer('.timer', deadline);
+  setTimer(selector, deadline);
 }
 
-module.exports = timer;
+// module.exports = timer;
+export default timer;
